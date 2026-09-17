@@ -1,0 +1,5 @@
+import {Art} from '@/components/art';
+import {settings} from '@/lib/data';
+import Link from 'next/link';
+export const metadata={title:'Our story'};
+export default async function Page(){const s=await settings();return <><div className="page-title"><span className="eyebrow">THE HEART OF KRISHNA</span><h1>Rooted in tradition.<br/><i>Made for your story.</i></h1></div><section className="container editorial-layout section"><Art index={7} alt="Rich wine fabric with a traditional woven border"/><div><span className="eyebrow">SAREES AND READYMADE, WITH LOVE</span><h2>The beauty of belonging.</h2><p>{s.about_text}</p><p>Whether it’s a wedding in the family, a long-awaited celebration, or a day you simply want to feel your best, we’re here to help you find something that feels like you.</p><p>Explore our edit online, ask our virtual stylist a question, or speak with our team for a personal recommendation.</p><Link href="/contact" className="button">LET’S FIND YOUR FAVOURITE ↗</Link></div></section></>;}

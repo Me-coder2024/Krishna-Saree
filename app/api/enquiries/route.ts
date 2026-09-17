@@ -1,0 +1,4 @@
+import {db} from '@/lib/supabase';
+import {enquirySchema} from '@/lib/validation';
+import {limited} from '@/lib/rate-limit';
+export async function POST(req:Request){if(limited(`enquiry:${req.headers.get('x-forwarded-for')||'local'}`,8))return Response.json({error:'Please wait a minute before sending another request.'},{status:429});try{const parsed=enquirySchema.safeParse(await req.json());if(!parsed.success)return Response.json({error:'Please check your name, email and message.'},{status:400});const {error}=await db().from('enquiries').insert(parsed.data);if(error)return Response.json({error:'Enquiries are not available yet. Please try again once the store is connected.'},{status:503});if(parsed.data.product_id)await db().from('product_events').insert({product_id:parsed.data.product_id,event_type:'enquiry'});return Response.json({ok:true});}catch{return Response.json({error:'Unable to send your enquiry. Please try again.'},{status:500});}}

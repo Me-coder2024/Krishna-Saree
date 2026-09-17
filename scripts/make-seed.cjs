@@ -1,0 +1,11 @@
+const fs=require('fs');
+const ts=require('typescript');
+const Module=require('module');
+const js=ts.transpileModule(fs.readFileSync('lib/catalog.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+const compiled=new Module('catalog');compiled._compile(js,'catalog.js');
+const products=compiled.exports.samples;
+const q=v=>v===null?'null':typeof v==='boolean'?String(v):typeof v==='number'?String(v):"'"+String(v).replaceAll("'","''")+"'";
+const cols=['id','name','slug','description','fabric','color','price','discount_price','stock','category','collection','images','is_featured','is_active'];
+const sql='-- Optional sample catalogue. Samples start archived: review details and replace reference imagery before activating in admin.\n'+products.map(p=>'insert into public.products ('+cols.join(',')+') values ('+cols.map(k=>q(k==='images'?JSON.stringify(p[k]):k==='is_active'?false:p[k])).join(',')+') on conflict (slug) do nothing;').join('\n');
+fs.writeFileSync('supabase/seed.sql',sql+'\n');
+console.log('Created optional seed SQL for '+products.length+' archived sample products.');

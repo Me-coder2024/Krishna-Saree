@@ -1,0 +1,4 @@
+import {settings} from '@/lib/data';
+import {EnquiryForm} from '@/components/forms';
+export const metadata={title:'Contact Krishna'};
+export default async function Page(){const s=await settings();return <><div className="page-title"><span className="eyebrow">A CONVERSATION, A BEAUTIFUL BEGINNING</span><h1>We’d love to hear from you.</h1><p>A question about a saree? Let’s find the answer together.</p></div><section className="container contact-layout section"><div><h2>Let’s talk, personally.</h2><p>Tell us your occasion, your favourite colours, or the piece you have your eye on. Our team will get back to you.</p>{s.contact_email&&<p><a href={`mailto:${s.contact_email}`}>{s.contact_email}</a></p>}{s.contact_phone&&<p><a href={`tel:${s.contact_phone}`}>{s.contact_phone}</a></p>}{s.address&&<p>{s.address}</p>}{s.opening_time&&<p>{s.working_days.join(', ')}<br/>{s.opening_time} – {s.closing_time}</p>}<span className="ornament">✽</span></div><EnquiryForm/></section></>;}

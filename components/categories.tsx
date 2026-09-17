@@ -1,0 +1,9 @@
+'use client';
+import Link from 'next/link';
+import {useQuery} from '@tanstack/react-query';
+import {usePathname,useSearchParams} from 'next/navigation';
+import {ArrowUpRight,Shirt,Baby,Sparkles,Flower2,Gem} from 'lucide-react';
+import {Category,defaultCategories} from '@/lib/categories';
+export function useCategories(){return useQuery<Category[]>({queryKey:['categories'],queryFn:async()=>{const r=await fetch('/api/categories');if(!r.ok)throw Error('Could not load categories');return r.json();},initialData:defaultCategories,staleTime:60000});}
+export function CategoryNavigation(){const {data=[]}=useCategories();const path=usePathname();const params=useSearchParams();if(path.startsWith('/admin'))return null;return <nav className="category-nav" aria-label="Shop by clothing category"><Link href="/shop" className={path==='/shop'&&!params.get('department')?'active':''}>All clothing</Link>{data.map(c=><Link key={c.slug} href={`/shop?department=${c.slug}`} className={params.get('department')===c.slug?'active':''}>{c.name}</Link>)}</nav>;}
+export function CategorySection(){const {data=[]}=useCategories();const icons:Record<string,typeof Shirt>={'womens-wear':Flower2,'mens-wear':Shirt,'kids-wear':Baby,'cultural-wear':Sparkles,'accessories':Gem};return <section className="container section department-section"><div className="section-heading"><div><span className="eyebrow">SOMETHING FOR EVERYONE</span><h2>One family. Many beautiful styles.</h2></div><Link href="/shop" className="text-link">Explore all clothing <ArrowUpRight size={18}/></Link></div><div className="department-grid">{data.map(c=>{const Icon=icons[c.slug]||Shirt;return <Link href={`/shop?department=${c.slug}`} key={c.slug}><Icon size={30}/><h3>{c.name}</h3><p>{c.description}</p><span>EXPLORE <ArrowUpRight size={15}/></span></Link>;})}</div></section>;}
